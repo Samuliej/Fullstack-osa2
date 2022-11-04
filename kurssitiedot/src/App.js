@@ -1,10 +1,10 @@
-
 const Course = (props) => {
   const {name, parts} = props.course
   return (
     <div>
       <Header text={name} />
       <Content parts={parts} />
+      <TotalExercises parts={parts}/>
     </div>
   )
 }
@@ -32,6 +32,17 @@ const Part = (props) => {
   )
 }
 
+const TotalExercises = (props) => {
+  let exs = 0;
+  exs = props.parts.map(each => each.exercises)
+  let sum = exs.reduce((x,y) => x + y)
+  return (
+    <div>
+      <strong><p>total of {sum} exercises</p></strong>
+    </div>
+  )
+}
+
 const App = () => {
   const course = {
     name: 'Half Stack application development',
@@ -51,6 +62,11 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4
       }
     ]
   }
