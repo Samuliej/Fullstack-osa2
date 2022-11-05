@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 const Person = (props) => {
-  console.log(props)
   return (
     <p>{props.name}</p>
   )
@@ -17,22 +16,22 @@ const App = () => {
   const [newName, setNewName] = useState('')
 
   const addPerson = (event) => {
-    console.log('button clicked', event.target)
-    console.log(newName)
+    let duplicate;
+    duplicate = persons.find(person => person.name === newName)
     event.preventDefault()
+    if (!duplicate) {
+    console.log('button clicked', event.target)
     const personObject = {
       name: newName,
       id: persons.length + 1
     }
-
     setPersons(persons.concat(personObject))
     setNewName('')
+    } else
+        alert(`${newName} is already added to the phonebook`)
   }
 
-  console.log(persons)
-
   const handlePersonChange = (event) => {
-    console.log(event.target.value)
     setNewName(event.target.value)
   }
 
@@ -46,7 +45,6 @@ const App = () => {
             onChange={handlePersonChange}
           />
         </div>
-        <div>debug: {newName}</div>
         <div>
           <button type="submit">add</button>
         </div>
