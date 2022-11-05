@@ -1,21 +1,20 @@
 import { useState } from 'react'
 
-const Person = (props) => {
-  return (
-    <p>{props.name} {props.number}</p>
-  )
-}
+const Person = props => <p>{props.name} {props.number}</p>
+
+const Header = props => <h2>{props.text}</h2>
 
 const App = () => {
 
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas',
-      number: '0401232112',
-      id: 1 
-    }
-  ]) 
+    { name: 'Arto Hellas', number: '040-123456', id:1 },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id:2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id:3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id:4 }
+  ])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
 
   const addPerson = (event) => {
     let duplicate;
@@ -34,17 +33,21 @@ const App = () => {
         alert(`${newName} is already added to the phonebook`)
   }
 
-  const handlePersonChange = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
+  // Event handlers
+  const handlePersonChange = event => setNewName(event.target.value)
+  const handleNumberChange = event => setNewNumber(event.target.value)
+  const handleFilterChange = event => setFilter(event.target.value)
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <Header text="Phonebook"/>
+        <div>
+          filter shown with: <input
+            value={filter}
+            onChange={handleFilterChange}
+          />
+        </div>
+      <Header text="Add new"/>
       <form onSubmit={addPerson}>
         <div>
           name: <input 
@@ -61,10 +64,11 @@ const App = () => {
           <button type="submit">add</button>
         </div>
       </form>
-      <h2>Numbers</h2>
+      <Header text="Numbers"/>
       <div>
-          {persons.map(person => 
-            <Person key={person.id} name={person.name} number={person.number} />) }
+          {persons.map(person => person.name.toLowerCase().includes(filter) ?
+            <Person key={person.id} name={person.name} number={person.number} /> :
+            <div></div>) }
         </div>
     </div>
   )
