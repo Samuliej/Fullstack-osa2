@@ -1,8 +1,59 @@
 import { useState } from 'react'
 
-const Person = props => <p>{props.name} {props.number}</p>
+/*                      COMPONENTS                            */
 
+const Person = props => <p>{props.name} {props.number}</p>
 const Header = props => <h2>{props.text}</h2>
+
+const Filter = props => {
+  return (
+    <Input values={props}/>
+  )
+}
+
+const Input = (props) => {
+  const {text, value, func} = props.values
+  return (
+    <div>
+      {text} <input 
+        value={value}
+        onChange={func}
+      />
+    </div>
+  )
+}
+
+const Form = props => {
+  return (
+    <form onSubmit={props.submitAction}>
+    <div>
+      name: <input 
+            value={props.nameInput}
+            onChange={props.nameChange}
+            />
+            <br/>
+      number: <input
+            value={props.numberInput}
+            onChange={props.numberChange}
+      />
+    </div>
+    <div>
+      <button type="submit">add</button>
+    </div>
+  </form>
+  )
+}
+
+const Persons = props => {
+  return (
+    <div>
+    {props.arr.map(person => person.name.toLowerCase().includes(props.filt) ?
+      <Person key={person.id} name={person.name} number={person.number} /> : null ) }
+  </div>
+  )
+}
+
+/*                      /COMPONENTS                            */
 
 const App = () => {
 
@@ -41,35 +92,12 @@ const App = () => {
   return (
     <div>
       <Header text="Phonebook"/>
-        <div>
-          filter shown with: <input
-            value={filter}
-            onChange={handleFilterChange}
-          />
-        </div>
+      <Filter text="filter shown with: " value={filter} func={handleFilterChange} />
       <Header text="Add new"/>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input 
-                value={newName}
-                onChange={handlePersonChange}
-                />
-                <br/>
-          number: <input
-                value={newNumber}
-                onChange={handleNumberChange}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Form submitAction={addPerson} nameInput={newName} nameChange={handlePersonChange}
+            numberInput={newNumber} numberChange={handleNumberChange}  />
       <Header text="Numbers"/>
-      <div>
-          {persons.map(person => person.name.toLowerCase().includes(filter) ?
-            <Person key={person.id} name={person.name} number={person.number} /> :
-            <div></div>) }
-        </div>
+      <Persons arr={persons} filt={filter} />
     </div>
   )
 
