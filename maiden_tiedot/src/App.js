@@ -21,7 +21,7 @@ const Input = (props) => {
 
 const FullInfo = props => {
   // console.log('info of one country')
-  // console.log(props.info)
+  //console.log(props.info)
 
   return (
     <div>
@@ -91,8 +91,8 @@ const Countries = props => {
       return (
         <div>
           {
-          props.arr.map(country => country.name.common.toLowerCase().includes(props.filt) ?
-          <Country key={country.cca2} 
+          props.arr.map(country => country.name.common.toLowerCase().includes(props.filt) ? 
+          <Country fullCountry={country} key={country.cca2} 
                   name={country.name.common} /> : null ) }
         </div>
       )
@@ -101,9 +101,15 @@ const Countries = props => {
 }
 
 const Country = props => {
+  const [component, setComponent] = useState([])
+  const handleClick = () => {
+    setComponent(<FullInfo info={props.fullCountry} />)
+  }
+
   return (
     <div>
-      <p>{props.name}</p>
+      {props.name} <button onClick={handleClick}>show</button>
+      {component}
     </div>
   )
 }
