@@ -20,9 +20,6 @@ const Input = (props) => {
 }
 
 const FullInfo = props => {
-  // console.log('info of one country')
-  //console.log(props.info)
-
   return (
     <div>
       <h1>{props.info.name.common}</h1>
@@ -31,6 +28,41 @@ const FullInfo = props => {
       <h2>languages:</h2>
       <Languages lang={props.info.languages} />
       <Flag link={props.info.flags.png} />
+      <Weather country={props.info} />
+    </div>
+  )
+}
+
+const Weather = (props) => {
+  const [apiData, setApiData] = useState({})
+  const apiKey = process.env.REACT_APP_MY_API_KEY
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${props.country.capital}&appid=${apiKey}`
+
+  useEffect(() => {
+    fetch(apiUrl)
+      .then((res) => res.json())
+      .then((data) => setApiData(data))
+  }, [apiUrl])
+
+  const kelvinToCelsius = kelvin => {
+    return (Math.floor((kelvin - 273.15) * 100) / 100)
+  }
+
+  function getImageIcon(weather) {
+      const value = weather && Array.isArray(weather) && weather[0].icon
+      return value
+  }
+
+  return (
+    <div>
+      <h2>Weather in {props.country.capital}</h2>
+      <p>temperature is {kelvinToCelsius(apiData.main?.temp)} Celsius</p>
+      {
+        (apiData.weather !== undefined) ? 
+      <img alt="weather" src={`http://openweathermap.org/img/wn/${getImageIcon(apiData.weather)}@2x.png`} />
+      : <p></p>
+      }
+      <p>wind {apiData.wind?.speed} m/s</p>
     </div>
   )
 }
@@ -42,7 +74,6 @@ const Flag = props => {
 }
 
 const Languages = props => {
-  //console.log(props.lang)
   return (
     <ul>
       {
@@ -61,8 +92,6 @@ const Countries = props => {
   countryArr = props.arr.filter(country => (country.name.common.toLowerCase().includes(props.filt)) ?
       country : null
   )
-
-  //console.log(countryArr)
 
   if (countryArr.length === 1) {
     return (
@@ -102,6 +131,7 @@ const Countries = props => {
 
 const Country = props => {
   const [component, setComponent] = useState([])
+
   const handleClick = () => {
     setComponent(<FullInfo info={props.fullCountry} />)
   }
@@ -116,7 +146,6 @@ const Country = props => {
 
 
 function App() {
-
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
 
