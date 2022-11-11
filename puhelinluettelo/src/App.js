@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personSV from './services/persons'
 
 /*                      COMPONENTS                            */
 
@@ -63,19 +63,14 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        console.log(response.data)
-        setPersons(response.data)
+  useEffect(() => {
+    personSV
+      .getAll()
+      .then(initialNotes => {
+        setPersons(initialNotes)
       })
-  }
+  }, [])
 
-  useEffect(hook, [])
-  console.log('render', persons.length, 'notes')
 
   const addPerson = (event) => {
     let duplicate;
@@ -87,9 +82,14 @@ const App = () => {
       number: newNumber,
       id: persons.length + 1
     }
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+
+    personSV
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
     } else
         alert(`${newName} is already added to the phonebook`)
   }
