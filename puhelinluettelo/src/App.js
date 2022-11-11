@@ -100,8 +100,22 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
-    } else
-        alert(`${newName} is already added to the phonebook`)
+    } else {
+      if (window.confirm(`${duplicate.name} is already added to the phonebook, do you want to 
+        replace the existing number with a new one?`)) {
+        updatePerson(duplicate)
+      }
+    }
+  }
+
+  const updatePerson = (person) => {
+    const newPerson = { ...person, number: newNumber }
+    const id = person.id
+    personSV
+      .update(id, newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+    })
   }
 
   const deletePerson = (id) => {
