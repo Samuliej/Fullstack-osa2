@@ -1,7 +1,19 @@
 import { useState, useEffect } from 'react'
 import personSV from './services/persons'
+import './index.css'
 
 /*                      COMPONENTS                            */
+
+const Notification = ({message}) => {
+  if (message === '') {
+    return <div className="empty"></div>
+  }
+  return (
+    <div className="error">
+      {message}
+    </div>
+  )
+}
 
 const Person = props => { 
  return ( <p>{props.name} {props.number} 
@@ -10,7 +22,7 @@ const Person = props => {
   )
 }
 
-const Header = props => <h2>{props.text}</h2>
+const Header = props => <h1>{props.text}</h1>
 
 const Filter = props => {
   return (
@@ -72,6 +84,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     personSV
@@ -97,6 +110,7 @@ const App = () => {
       .create(personObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
+        setError(`Added ${returnedPerson.name}`, 5000)
         setNewName('')
         setNewNumber('')
       })
@@ -104,8 +118,19 @@ const App = () => {
       if (window.confirm(`${duplicate.name} is already added to the phonebook, do you want to 
         replace the existing number with a new one?`)) {
         updatePerson(duplicate)
+      } else {
+          setError('Update cancelled by user', 5000)
+          setNewName('')
+          setNewNumber('')
       }
     }
+  }
+
+  const setError = (message, time) => {
+    setErrorMessage(message)
+    setTimeout(() => {
+      setErrorMessage('')
+    }, time)
   }
 
   const updatePerson = (person) => {
@@ -115,6 +140,12 @@ const App = () => {
       .update(id, newPerson)
       .then(returnedPerson => {
         setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+        setNewName('')
+        setNewNumber('')
+        setError(`Updated the phone number of ${returnedPerson.name}`, 5000)
+    })
+    .catch(error => {
+      setError(`something went wrong updating ${newPerson.name}`)
     })
   }
 
@@ -129,6 +160,7 @@ const App = () => {
         .then(initialPersons => {
           setPersons(initialPersons)
         })
+      setError(`User ${delPerson.name} removed`, 5000)
     }
   }
 
@@ -140,6 +172,7 @@ const App = () => {
   return (
     <div>
       <Header text="Phonebook"/>
+      <Notification message={errorMessage} />
       <Filter text="filter shown with: " value={filter} func={handleFilterChange} />
       <Header text="Add new"/>
       <Form submitAction={addPerson} nameInput={newName} nameChange={handlePersonChange}
