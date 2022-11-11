@@ -3,7 +3,13 @@ import personSV from './services/persons'
 
 /*                      COMPONENTS                            */
 
-const Person = props => <p>{props.name} {props.number}</p>
+const Person = props => { 
+ return ( <p>{props.name} {props.number} 
+              <button onClick={props.buttonFunc}>delete</button>
+          </p> 
+  )
+}
+
 const Header = props => <h2>{props.text}</h2>
 
 const Filter = props => {
@@ -45,14 +51,18 @@ const Form = props => {
   )
 }
 
+/*
 const Persons = props => {
   return (
     <div>
     {props.arr.map(person => person.name.toLowerCase().includes(props.filt) ?
-      <Person key={person.id} name={person.name} number={person.number} /> : null ) }
+      <Person key={person.id} name={person.name} number={person.number} 
+        deletePerson={props.deletePerson}
+      /> : null ) }
   </div>
   )
-}
+} 
+*/
 
 /*                      /COMPONENTS                            */
 
@@ -66,8 +76,8 @@ const App = () => {
   useEffect(() => {
     personSV
       .getAll()
-      .then(initialNotes => {
-        setPersons(initialNotes)
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
@@ -94,6 +104,20 @@ const App = () => {
         alert(`${newName} is already added to the phonebook`)
   }
 
+  const deletePerson = (id) => {
+    const delPerson = persons.find(person => person.id === id ? person : '')
+    console.log(delPerson)
+    if (window.confirm(`Delete the user ${delPerson.name}?`))
+    {
+      personSV.deleteP(id)
+      personSV
+        .getAll()
+        .then(initialPersons => {
+          setPersons(initialPersons)
+        })
+    }
+  }
+
   // Event handlers
   const handlePersonChange = event => setNewName(event.target.value)
   const handleNumberChange = event => setNewNumber(event.target.value)
@@ -107,7 +131,16 @@ const App = () => {
       <Form submitAction={addPerson} nameInput={newName} nameChange={handlePersonChange}
             numberInput={newNumber} numberChange={handleNumberChange}  />
       <Header text="Numbers"/>
-      <Persons arr={persons} filt={filter} />
+      <ul>
+        {persons.map(person => person.name.toLowerCase().includes(filter) ?
+          <Person
+            key={person.id}
+            name={person.name}
+            number={person.number}
+            buttonFunc={() => deletePerson(person.id)}
+          /> : null
+        )}
+      </ul>
     </div>
   )
 
