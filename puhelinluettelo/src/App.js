@@ -1,19 +1,10 @@
 import { useState, useEffect } from 'react'
 import personSV from './services/persons'
 import './index.css'
+import Notification from './components/Notification'
+import Form from './components/Form'
 
 /*                      COMPONENTS                            */
-
-const Notification = ({message}) => {
-  if (message === '') {
-    return <div className="empty"></div>
-  }
-  return (
-    <div className="error">
-      {message}
-    </div>
-  )
-}
 
 const Person = props => { 
  return ( <p>{props.name} {props.number} 
@@ -42,39 +33,6 @@ const Input = (props) => {
   )
 }
 
-const Form = props => {
-  return (
-    <form onSubmit={props.submitAction}>
-    <div>
-      name: <input 
-            value={props.nameInput}
-            onChange={props.nameChange}
-            />
-            <br/>
-      number: <input
-            value={props.numberInput}
-            onChange={props.numberChange}
-      />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-  )
-}
-
-/*
-const Persons = props => {
-  return (
-    <div>
-    {props.arr.map(person => person.name.toLowerCase().includes(props.filt) ?
-      <Person key={person.id} name={person.name} number={person.number} 
-        deletePerson={props.deletePerson}
-      /> : null ) }
-  </div>
-  )
-} 
-*/
 
 /*                      /COMPONENTS                            */
 
@@ -145,7 +103,8 @@ const App = () => {
         setError(`Updated the phone number of ${returnedPerson.name}`, 5000)
     })
     .catch(error => {
-      setError(`something went wrong updating ${newPerson.name}`)
+      setError(`error in updating ${newPerson.name}, data already deleted`, 5000)
+      setPersons(persons.filter(p => p.id !== newPerson.id))
     })
   }
 
@@ -159,6 +118,10 @@ const App = () => {
         .getAll()
         .then(initialPersons => {
           setPersons(initialPersons)
+        })
+        .catch(error => {
+          setError(`error, something went wrong removing ${delPerson.name}`, 5000)
+          setPersons(persons.filter(p => p.id !== id))
         })
       setError(`User ${delPerson.name} removed`, 5000)
     }
