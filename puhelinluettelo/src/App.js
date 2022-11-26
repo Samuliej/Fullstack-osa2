@@ -117,8 +117,10 @@ const App = () => {
       personSV
         .getAll()
         .then(initialPersons => {
-          setPersons(initialPersons)
+          setPersons(persons.filter(p => p.id !== id))
         })
+        /*.then(initialPersons => {
+          setPersons(initialPersons) */
         .catch(error => {
           setError(`error, something went wrong removing ${delPerson.name}`, 5000)
           setPersons(persons.filter(p => p.id !== id))
