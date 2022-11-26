@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'https://puhluet-backend.fly.dev/api/persons'
+const baseUrl = '/api/persons'
 
 
 const getAll = () => {
