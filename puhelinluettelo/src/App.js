@@ -146,7 +146,7 @@ const App = () => {
       <ul>
         {persons.map(person => person.name.toLowerCase().includes(filter) ?
           <Person
-            key={person.id}
+            key={person.name}
             name={person.name}
             number={person.number}
             buttonFunc={() => deletePerson(person.id)}
