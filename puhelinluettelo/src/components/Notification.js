@@ -1,15 +1,13 @@
 const Notification = ({message}) => {
-    if (message === '') {
+    if (!message) {
       return <div className="empty"></div>
+    } else {
+      return (
+        <div className="notif">
+          {message}
+        </div>
+      )
     }
-    if (message.includes('error')) {
-      return <div className="error" >{message}</div>
-    }
-    return (
-      <div className="notif">
-        {message}
-      </div>
-    )
 }
 
 export default Notification

@@ -6,6 +6,19 @@ import Form from './components/Form'
 
 /*                      COMPONENTS                            */
 
+const Error = props => {
+    if (!props.message) {
+      return <div className="empty"></div>
+    } else {
+      return (
+        <div className="error">
+          {props.message}
+        </div>
+      )
+    }
+  
+}
+
 const Person = props => { 
  return ( <p>{props.name} {props.number} 
               <button onClick={props.buttonFunc}>delete</button>
@@ -43,6 +56,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState('')
 
   useEffect(() => {
     personSV
@@ -68,9 +82,13 @@ const App = () => {
       .create(personObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
-        setError(`Added ${returnedPerson.name}`, 5000)
+        setNotification(`Added ${returnedPerson.name}`)
         setNewName('')
         setNewNumber('')
+      })
+      .catch(error => {
+        console.log(error.response.data)
+        setError(error.response.data.error, 5000)
       })
     } else {
       if (window.confirm(`${duplicate.name} is already added to the phonebook, do you want to 
@@ -84,11 +102,18 @@ const App = () => {
     }
   }
 
-  const setError = (message, time) => {
+  const setError = (message) => {
     setErrorMessage(message)
     setTimeout(() => {
       setErrorMessage('')
-    }, time)
+    }, 5000)
+  }
+
+  const setNotification = (message) => {
+    setNotificationMessage(message)
+    setTimeout(() => {
+      setNotificationMessage('')
+    }, 5000)
   }
 
   const updatePerson = (person) => {
@@ -100,10 +125,10 @@ const App = () => {
         setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
         setNewName('')
         setNewNumber('')
-        setError(`Updated the phone number of ${returnedPerson.name}`, 5000)
+        setNotification(`Updated the phone number of ${returnedPerson.name}`)
     })
     .catch(error => {
-      setError(`error in updating ${newPerson.name}, data already deleted`, 5000)
+      setError(error.response.data.error)
       setPersons(persons.filter(p => p.id !== newPerson.id))
     })
   }
@@ -119,13 +144,11 @@ const App = () => {
         .then(initialPersons => {
           setPersons(persons.filter(p => p.id !== id))
         })
-        /*.then(initialPersons => {
-          setPersons(initialPersons) */
         .catch(error => {
-          setError(`error, something went wrong removing ${delPerson.name}`, 5000)
+          setError(error.response.data.error)
           setPersons(persons.filter(p => p.id !== id))
         })
-      setError(`User ${delPerson.name} removed`, 5000)
+      setNotification(`User ${delPerson.name} removed`)
     }
   }
 
@@ -137,7 +160,8 @@ const App = () => {
   return (
     <div>
       <Header text="Phonebook"/>
-      <Notification message={errorMessage} />
+      <Notification message={notificationMessage} />
+      <Error message={errorMessage} />
       <Filter text="filter shown with: " value={filter} func={handleFilterChange} />
       <Header text="Add new"/>
       <Form submitAction={addPerson} nameInput={newName} nameChange={handlePersonChange}
