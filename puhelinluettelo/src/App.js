@@ -88,14 +88,14 @@ const App = () => {
       })
       .catch(error => {
         console.log(error.response.data)
-        setError(error.response.data.error, 5000)
+        setError(error.response.data.error)
       })
     } else {
       if (window.confirm(`${duplicate.name} is already added to the phonebook, do you want to 
         replace the existing number with a new one?`)) {
         updatePerson(duplicate)
       } else {
-          setError('Update cancelled by user', 5000)
+          setError('Update cancelled by user')
           setNewName('')
           setNewNumber('')
       }
@@ -129,7 +129,9 @@ const App = () => {
     })
     .catch(error => {
       setError(error.response.data.error)
-      setPersons(persons.filter(p => p.id !== newPerson.id))
+      setNewName('')
+      setNewNumber('')
+      //setPersons(persons.filter(p => p.id !== newPerson.id))
     })
   }
 
